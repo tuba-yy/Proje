@@ -1,0 +1,78 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using MySql.Data.MySqlClient;
+using MySql.Data;
+
+namespace WindowsFormsApp1
+{
+    public partial class Form2 : Form
+    {
+        MySqlConnection baglanti;
+        public Form2()
+        {
+            InitializeComponent();
+        }
+
+        private void Form2_Load(object sender, EventArgs e)
+        {
+            string bag;
+
+            MySqlConnectionStringBuilder build = new MySqlConnectionStringBuilder();
+            build.UserID = "root";
+            build.Password = " ";
+            build.Database = "performans";
+            build.Server = "localhost";
+
+            bag = build.ToString();
+            baglanti = new MySqlConnection(bag);
+
+            comboBox1.Items.Add("Departman A");
+            comboBox1.Items.Add("Departman B");
+            comboBox1.Items.Add("Departman C");
+            comboBox1.Items.Add("Departman D");
+
+            comboBox2.Items.Add("Departman A");
+            comboBox2.Items.Add("Departman B");
+            comboBox2.Items.Add("Departman C");
+            comboBox2.Items.Add("Departman D");
+
+            comboBox3.Items.Add("ISG");
+            comboBox3.Items.Add("Kalite");
+            comboBox3.Items.Add("Verimlilik");
+            comboBox3.Items.Add("Servis");
+            comboBox3.Items.Add("Stok");
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                baglanti.Open();
+
+                MySqlCommand ekle = new MySqlCommand("insert into  aksiyon_tablosu (aksiyon_id,olusturan_birim,sorumlu_birim,kayit_tarihi,termin_tarihi,sorumlu_ad_soyad,aksiyon_tanim,sorun_kategori) values ('" + textBox1.Text + "','" + comboBox2.Text + "','" + comboBox1.Text + "','" + dateTimePicker1.Value + "','" + dateTimePicker2.Value + "','" + textBox3.Text + "','" + textBox5.Text + "','" + comboBox3.Text + "')", baglanti);
+               
+                object sonuc = null;
+                sonuc = ekle.ExecuteNonQuery(); 
+                if (sonuc != null)
+                    MessageBox.Show("Sisteme başarıyla eklendi", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                    MessageBox.Show("Sisteme eklenemedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                
+                baglanti.Close();
+            }
+            catch (Exception HataYakala)
+            {
+                MessageBox.Show("Hata: " + HataYakala.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
+        }
+    }
+}
