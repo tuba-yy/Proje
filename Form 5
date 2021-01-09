@@ -1,0 +1,98 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using MySql.Data.MySqlClient;
+using MySql.Data;
+
+namespace WindowsFormsApp1
+{
+    
+    public partial class Form5 : Form
+    {
+        MySqlConnection baglanti;
+        MySqlCommand guncelle;
+
+        public Form5()
+        {
+            InitializeComponent();
+        }
+
+        private void Form5_Load(object sender, EventArgs e)
+        {
+            string bag;
+
+            MySqlConnectionStringBuilder build = new MySqlConnectionStringBuilder();
+            build.UserID = "root";
+            build.Password = "  ";
+            build.Database = "performans";
+            build.Server = "localhost";
+
+            bag = build.ToString();
+            baglanti = new MySqlConnection(bag);
+
+            comboBox1.Items.Add("Kök Neden 1");
+            comboBox1.Items.Add("Kök Neden 2");
+            comboBox1.Items.Add("Kök Neden 3");
+            comboBox1.Items.Add("Kök Neden 4");
+
+            dataGridView1.Visible = false;
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            string sql = "SELECT * FROM aksiyon_tablosu where aksiyon_id='"+textBox7.Text+"' ";
+
+            DataTable dt = new DataTable();
+
+            MySqlDataAdapter adapter = new MySqlDataAdapter();
+            MySqlCommand command = new MySqlCommand();
+
+            command.CommandText = sql;
+            command.Connection = baglanti;
+            adapter.SelectCommand = command;
+
+            baglanti.Open();
+            adapter.Fill(dt);
+            dataGridView1.DataSource = dt;
+
+            textBox1.Text = dataGridView1.CurrentRow.Cells[1].Value.ToString();
+            textBox2.Text = dataGridView1.CurrentRow.Cells[2].Value.ToString();
+            textBox3.Text = dataGridView1.CurrentRow.Cells[6].Value.ToString();
+            textBox4.Text = dataGridView1.CurrentRow.Cells[8].Value.ToString();
+            textBox8.Text = dataGridView1.CurrentRow.Cells[3].Value.ToString();
+            textBox9.Text= dataGridView1.CurrentRow.Cells[4].Value.ToString();
+            textBox5.Text = dataGridView1.CurrentRow.Cells[7].Value.ToString();
+
+            baglanti.Close();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            guncelle = new MySqlCommand();
+
+            baglanti.Open();
+            guncelle.Connection = baglanti;
+            guncelle.CommandText = "update  aksiyon_tablosu set kok_neden='" + comboBox1.Text + "', kapatma_tarihi='" + dateTimePicker3.Value + "',cozum_aciklama='" + textBox6.Text + "', durum='1 KAPALI'  where aksiyon_id='" + textBox7.Text + "' ";
+            
+            object sonuc = null;
+            sonuc = guncelle.ExecuteNonQuery();
+
+            if (sonuc != null)
+                MessageBox.Show("Sisteme başarıyla eklendi", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            else
+                MessageBox.Show("Sisteme eklenemedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            baglanti.Close();
+        }
+
+
+    }
+}
+
