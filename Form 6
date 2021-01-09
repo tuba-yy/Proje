@@ -1,0 +1,90 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using MySql.Data.MySqlClient;
+using MySql.Data;
+
+namespace WindowsFormsApp1
+{
+    public partial class Form6 : Form
+    {
+        MySqlConnection baglanti;
+        MySqlCommand komut;
+        MySqlCommand guncelle;
+        MySqlDataReader reader;
+       
+     public Form6()
+        {
+            InitializeComponent();
+           
+        }
+       
+     private void Form6_Load(object sender, EventArgs e)
+        {
+            string bag;
+
+            MySqlConnectionStringBuilder build = new MySqlConnectionStringBuilder();
+            build.UserID = "root";
+            build.Password = "";
+            build.Database = "performans";
+            build.Server = "localhost";
+
+            bag = build.ToString();
+            baglanti = new MySqlConnection(bag);
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                komut = new MySqlCommand();
+                guncelle = new MySqlCommand();
+                
+                baglanti.Open();
+                komut.Connection = baglanti;
+
+                komut.CommandText = "SELECT * FROM kullanici_tanimlama where kullanici_adi_soyadi='" + textBox1.Text + "' AND kullanici_sifre='" + textBox2.Text + "'";
+
+                reader = komut.ExecuteReader();
+           
+
+                if (reader.Read())
+                {
+                    baglanti.Close();
+
+                    baglanti.Open();
+                    guncelle.Connection = baglanti;
+                    guncelle.CommandText= "update kullanici_tanimlama set kullanici_sifre='" + textBox3.Text + "' where kullanici_adi_soyadi='" + textBox1.Text + "'";
+
+                    object sonuc = null;
+                    sonuc = guncelle.ExecuteNonQuery();
+
+                    if (sonuc != null)
+                        MessageBox.Show("Sisteme başarıyla eklendi", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    else
+                        MessageBox.Show("Sisteme eklenemedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    baglanti.Close();
+                }
+
+                else
+                { MessageBox.Show("Hatalı Kullanıcı yada Şifre!"); }
+           
+            }
+
+            catch (Exception HataYakala)
+            {
+                MessageBox.Show("Hata: " + HataYakala.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+
+    }
+}
