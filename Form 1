@@ -1,0 +1,101 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using MySql.Data.MySqlClient;
+using MySql.Data;
+
+namespace WindowsFormsApp1
+{
+    public partial class Form1 : Form
+    {
+        MySqlConnection baglanti;
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            string bag;
+
+            MySqlConnectionStringBuilder build = new MySqlConnectionStringBuilder();
+            build.UserID = "root";
+            build.Password = " ";
+            build.Database = "performans";
+            build.Server = "localhost";
+
+            bag = build.ToString();
+            baglanti = new MySqlConnection(bag);
+
+            comboBox1.Items.Add(" ");
+            comboBox1.Items.Add("Departman A");
+            comboBox1.Items.Add("Departman B");
+            comboBox1.Items.Add("Departman C");
+            comboBox1.Items.Add("Departman D");
+
+            comboBox1.SelectedIndex = 0;
+
+            comboBox2.Items.Add(" ");
+            comboBox2.Items.Add("Departman A");
+            comboBox2.Items.Add("Departman B");
+            comboBox2.Items.Add("Departman C");
+            comboBox2.Items.Add("Departman D");
+
+            comboBox2.SelectedIndex = 0;
+
+            comboBox3.Items.Add(" ");
+            comboBox3.Items.Add("0 ACIK");
+            comboBox3.Items.Add("1 KAPALI");
+
+            comboBox3.SelectedIndex = 0;
+
+            comboBox4.Items.Add(" ");
+            comboBox4.Items.Add("S01 ISG");
+            comboBox4.Items.Add("S02 Kalite");
+            comboBox4.Items.Add("S03 Verimlilik");
+            comboBox4.Items.Add("S04 Servis");
+            comboBox4.Items.Add("S05 Stok");
+
+            comboBox4.SelectedIndex = 0;
+
+            comboBox5.Items.Add(" ");
+            comboBox5.Items.Add("Kök Neden 1");
+            comboBox5.Items.Add("Kök Neden 2");
+            comboBox5.Items.Add("Kök Neden 3");
+            comboBox5.Items.Add("Kök Neden 4");
+            
+            comboBox5.SelectedIndex = 0;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+            string sql = "SELECT * FROM aksiyon_tablosu where olusturan_birim Like '%" + comboBox1.Text + "%' AND sorumlu_birim Like '%" + comboBox2.Text + "%' AND durum Like '%" + comboBox3.Text + "%' AND sorun_kategori Like '%" + comboBox4.Text + "%' AND (kok_neden Like '%" + comboBox5.Text + "%' OR kok_neden IS NULL ) ";
+
+            DataTable dt = new DataTable();
+            MySqlDataAdapter adapter = new MySqlDataAdapter();
+            MySqlCommand command = new MySqlCommand();
+
+            command.CommandText = sql;
+            command.Connection = baglanti;
+            adapter.SelectCommand = command;
+
+            baglanti.Open();
+            adapter.Fill(dt);
+            dataGridView1.DataSource = dt;
+
+            label5.Text = dt.Rows.Count.ToString();
+
+           baglanti.Close();
+
+        }
+
+    }
+}
